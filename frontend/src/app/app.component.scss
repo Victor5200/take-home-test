@@ -4,29 +4,97 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 20px;
+  padding: 40px 20px;
 
   &--container {
     width: 60%;
+    max-width: 1200px;
   }
+
+  h1 {
+    margin-bottom: 30px;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 40px;
+
+  p {
+    color: #666;
+  }
+}
+
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 40px;
+  background-color: #ffebee;
+  border-radius: 8px;
+  border: 1px solid #ef5350;
+
+  p {
+    color: #c62828;
+    margin: 0;
+  }
+}
+
+.mat-elevation-z8 {
+  margin-top: 20px;
+  border: 1px solid #dee5ed;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .mdc-data-table {
   &__table {
-    margin-top: 20px;
-    border: 1px solid #dee5ed;
-    border-radius: 4px;
+    width: 100%;
   }
 
   &__header-cell {
     color: #7b8187;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+  }
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: capitalize;
+
+  &.status-active {
+    background-color: #e3f2fd;
+    color: #1976d2;
+  }
+
+  &.status-paid {
+    background-color: #e8f5e9;
+    color: #388e3c;
   }
 }
 
 @media (max-width: 992px) {
   .loans {
+    padding: 20px 10px;
+
     &--container {
       width: 100%;
+    }
+
+    h1 {
+      font-size: 1.5rem;
     }
   }
 }

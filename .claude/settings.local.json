@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:kzmgtjqt0vx63yji8h9l.lite.vusercontent.net)",
+      "Bash(cd:*)",
+      "Bash(ls:*)"
+    ]
+  }
+}
