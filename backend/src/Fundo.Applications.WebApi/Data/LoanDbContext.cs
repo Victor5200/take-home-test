@@ -1,5 +1,8 @@
 using Fundo.Applications.WebApi.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Fundo.Applications.WebApi.Data
 {
@@ -10,6 +13,7 @@ namespace Fundo.Applications.WebApi.Data
         }
 
         public DbSet<Loan> Loans { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,7 +30,20 @@ namespace Fundo.Applications.WebApi.Data
                 entity.Property(e => e.CreatedAt).IsRequired();
             });
 
-            // Seed data
+            // Configure User entity
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.Username).IsUnique();
+                entity.HasIndex(e => e.Email).IsUnique();
+                entity.Property(e => e.Username).HasMaxLength(100).IsRequired();
+                entity.Property(e => e.Email).HasMaxLength(200).IsRequired();
+                entity.Property(e => e.PasswordHash).IsRequired();
+                entity.Property(e => e.Role).HasMaxLength(50).IsRequired();
+                entity.Property(e => e.CreatedAt).IsRequired();
+            });
+
+            // Seed Loans
             modelBuilder.Entity<Loan>().HasData(
                 new Loan
                 {
@@ -74,6 +91,37 @@ namespace Fundo.Applications.WebApi.Data
                     CreatedAt = System.DateTime.UtcNow.AddMonths(-18)
                 }
             );
+
+            // Seed Users (admin and regular user for testing)
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    Id = 1,
+                    Username = "admin",
+                    Email = "admin@loanmanagement.com",
+                    PasswordHash = HashPassword("admin123"),
+                    Role = "Admin",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-12)
+                },
+                new User
+                {
+                    Id = 2,
+                    Username = "testuser",
+                    Email = "user@loanmanagement.com",
+                    PasswordHash = HashPassword("user123"),
+                    Role = "User",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-6)
+                }
+            );
+        }
+
+        private static string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(hashedBytes);
+            }
         }
     }
 }

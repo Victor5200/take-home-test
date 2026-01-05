@@ -1,6 +1,7 @@
 ﻿using Fundo.Applications.WebApi.Data;
 using Fundo.Applications.WebApi.DTOs;
 using Fundo.Applications.WebApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -67,11 +68,13 @@ namespace Fundo.Applications.WebApi.Controllers
         }
 
         /// <summary>
-        /// Create a new loan
+        /// Create a new loan (Requires authentication)
         /// </summary>
         [HttpPost]
+        [Authorize]
         [ProducesResponseType(typeof(LoanDto), 201)]
         [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public async Task<ActionResult<LoanDto>> CreateLoan([FromBody] CreateLoanDto createLoanDto)
         {
             _logger.LogInformation("Creating new loan for {ApplicantName} with amount {Amount}",
@@ -102,11 +105,13 @@ namespace Fundo.Applications.WebApi.Controllers
         }
 
         /// <summary>
-        /// Make a payment towards a loan
+        /// Make a payment towards a loan (Requires authentication)
         /// </summary>
         [HttpPost("{id}/payment")]
+        [Authorize]
         [ProducesResponseType(typeof(LoanDto), 200)]
         [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         [ProducesResponseType(404)]
         public async Task<ActionResult<LoanDto>> MakePayment(int id, [FromBody] PaymentDto paymentDto)
         {

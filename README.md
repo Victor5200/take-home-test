@@ -21,11 +21,11 @@
 
 This project implements a complete **Loan Management System** with a .NET Core backend exposing RESTful APIs and an Angular frontend for managing loan applications and payments.
 
-**Status**: ✅ All core requirements completed successfully
+**Status**: ✅ All requirements + ALL bonus features completed!
 
-**Time Spent**: ~8 hours
+**Time Spent**: ~12 hours (including bonus features)
 
-**Lines of Code**: ~2,500
+**Lines of Code**: ~3,500+
 
 ---
 
@@ -94,13 +94,16 @@ docker-compose down
 **Additional Backend Features:**
 - ✅ Entity Framework Core with SQL Server
 - ✅ Code-first migrations with automatic migration on startup
-- ✅ 5 pre-seeded loans for testing
+- ✅ 5 pre-seeded loans + 2 test users for testing
 - ✅ 10 comprehensive integration tests (xUnit + FluentAssertions)
 - ✅ Docker and Docker Compose setup
-- ✅ Swagger/OpenAPI documentation
+- ✅ Swagger/OpenAPI documentation with JWT support
 - ✅ Input validation on all DTOs
 - ✅ Proper error handling with meaningful messages
 - ✅ CORS configured for Angular frontend
+- ✅ **Serilog structured logging** (console + file with daily rolling)
+- ✅ **JWT Authentication** with user registration and login
+- ✅ **GitHub Actions CI/CD** for automated testing and builds
 
 ### ✅ Frontend Requirements
 
@@ -113,13 +116,13 @@ docker-compose down
 - ✅ Loading states and error handling
 - ✅ Real-time API integration
 
-### ❌ Bonus Features (Not Implemented)
+### ✅ Bonus Features (All Implemented!)
 
-- ❌ **Structured logging** - Using console logging only
-- ❌ **Authentication** - No auth/authorization implemented
-- ❌ **GitHub Actions** - No CI/CD pipeline
+- ✅ **Structured Logging** - Serilog with file and console output
+- ✅ **Authentication** - JWT-based authentication with role-based access
+- ✅ **GitHub Actions** - Complete CI/CD pipeline for backend and frontend
 
-*These were optional and omitted to focus on core requirements within the time constraint.*
+*All bonus features have been fully implemented!*
 
 ---
 
@@ -344,7 +347,8 @@ Content-Type: application/json
 - `404 Not Found` - Loan doesn't exist
 
 ### Sample Data
-The system is pre-seeded with 5 loans:
+
+**Loans** (5 pre-seeded):
 
 | ID | Applicant       | Amount     | Balance    | Status |
 |----|----------------|------------|------------|--------|
@@ -353,6 +357,112 @@ The system is pre-seeded with 5 loans:
 | 3  | Robert Johnson | $50,000.00 | $35,000.00 | active |
 | 4  | Maria Silva    | $15,000.00 | $5,000.00  | active |
 | 5  | Michael Brown  | $75,000.00 | $0.00      | paid   |
+
+**Users** (2 test accounts):
+
+| Username | Password | Email                      | Role  |
+|----------|----------|----------------------------|-------|
+| admin    | admin123 | admin@loanmanagement.com   | Admin |
+| testuser | user123  | user@loanmanagement.com    | User  |
+
+### Authentication Endpoints
+
+#### 1. Register New User
+```http
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "username": "newuser",
+  "email": "newuser@example.com",
+  "password": "password123"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "username": "newuser",
+  "email": "newuser@example.com",
+  "role": "User"
+}
+```
+
+#### 2. Login
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "username": "admin",
+  "email": "admin@loanmanagement.com",
+  "role": "Admin"
+}
+```
+
+#### 3. Using JWT Token
+
+Add the token to subsequent requests:
+```http
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Protected Endpoints** (require authentication):
+- `POST /api/loans` - Create loan
+- `POST /api/loans/{id}/payment` - Make payment
+
+**Public Endpoints** (no auth required):
+- `GET /api/loans` - List loans
+- `GET /api/loans/{id}` - Get loan details
+
+---
+
+## Structured Logging
+
+The application uses **Serilog** for structured logging with the following features:
+
+### Log Output
+- **Console**: Color-coded logs with timestamps
+- **File**: Daily rolling log files in `/logs` directory
+
+### Log Levels
+- **Debug**: Detailed diagnostic information
+- **Information**: Application flow (API calls, operations)
+- **Warning**: Validation failures, not-found errors
+- **Error**: Unexpected exceptions
+- **Fatal**: Critical errors causing shutdown
+
+### Log Examples
+
+```
+[22:15:30 INF] Creating new loan for Maria Silva with amount 15000
+[22:15:31 INF] Successfully created loan 6 for Maria Silva with amount 15000
+[22:15:35 WRN] Loan with ID 999 not found
+[22:15:40 INF] Payment processed successfully for loan 1. Amount: 2500, Old Balance: 7500, New Balance: 5000
+```
+
+### Viewing Logs
+
+**Console** (during runtime):
+```bash
+docker-compose logs -f backend
+```
+
+**Log Files** (persistent):
+```bash
+ls backend/logs/
+cat backend/logs/loan-api-20260104.log
+```
 
 ---
 
@@ -384,6 +494,25 @@ dotnet test --verbosity normal
 - WebApplicationFactory for integration testing
 - FluentAssertions for readable assertions
 - AAA pattern (Arrange, Act, Assert)
+
+### GitHub Actions CI/CD
+
+**Automated workflows** run on every push and pull request:
+
+**Backend Pipeline:**
+- ✅ Build .NET application
+- ✅ Run all tests
+- ✅ Check code quality
+- ✅ Build Docker image
+- ✅ Upload artifacts
+
+**Frontend Pipeline:**
+- ✅ Build Angular application
+- ✅ Run linting
+- ✅ Run tests (if configured)
+- ✅ Upload build artifacts
+
+View workflow status in the **Actions** tab on GitHub.
 
 ---
 
@@ -483,24 +612,14 @@ providers: [
 
 ## Features Not Completed
 
-### Bonus Features (Optional)
+### All Required and Bonus Features Completed! ✅
 
-#### 1. Structured Logging
-**Status**: Not implemented
-**Why**: Focused on core requirements first. Currently using `Console.WriteLine()`.
-**Effort**: ~1 hour to add Serilog with structured logging
+**Original Bonus Features** (all implemented):
+- ✅ Structured Logging - Serilog with console and file output
+- ✅ Authentication - JWT-based auth with registration/login
+- ✅ GitHub Actions - Complete CI/CD pipeline
 
-#### 2. Authentication/Authorization
-**Status**: Not implemented
-**Why**: Optional feature, focused on core functionality
-**Effort**: ~3-4 hours to implement JWT-based auth
-
-#### 3. GitHub Actions CI/CD
-**Status**: Not implemented
-**Why**: Time constraint, focused on application functionality
-**Effort**: ~1-2 hours to create basic pipeline
-
-### Other Features Not Included
+### Additional Features Not Included (Beyond Scope)
 
 - **Pagination**: List all loans returns all records (fine for small datasets)
 - **Soft Deletes**: No delete functionality implemented
@@ -660,9 +779,11 @@ providers: [
 ✅ **CORS**: Restricted to specific origin
 ✅ **Error Messages**: Don't expose internal details
 ✅ **Type Safety**: Strong typing in C# and TypeScript
+✅ **Authentication**: JWT-based authentication implemented
+✅ **Password Hashing**: SHA256 for secure password storage
+✅ **Authorization**: Role-based access control (User/Admin)
 
-❌ **Authentication**: Not implemented (would use JWT)
-❌ **Rate Limiting**: Not implemented
+❌ **Rate Limiting**: Not implemented (could add middleware)
 ❌ **HTTPS**: Using HTTP for development (would use HTTPS in prod)
 
 ---
