@@ -27,7 +27,9 @@ jobs:
         dotnet-version: '6.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore backend/src/Fundo.Applications.WebApi/Fundo.Applications.WebApi.csproj
+      run: |
+        dotnet restore backend/src/Fundo.Applications.WebApi/Fundo.Applications.WebApi.csproj
+        dotnet restore backend/src/Fundo.Services.Tests/Fundo.Services.Tests.csproj
 
     - name: Build
       run: dotnet build backend/src/Fundo.Applications.WebApi/Fundo.Applications.WebApi.csproj --configuration Release --no-restore
